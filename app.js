@@ -18,7 +18,7 @@ const server = createServer({
   enableCors: true,
 });
 
-const ENDPOINT_CONFIGS = [];
+const ENDPOINT_CONFIGS = [{ path: './endpoints/parser/' }];
 
 function logEndpointMetaData(endpointConfigs) {
   const endpointData = [];
