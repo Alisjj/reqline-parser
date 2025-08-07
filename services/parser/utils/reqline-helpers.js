@@ -1,3 +1,4 @@
+const HttpRequest = require('@app-core/http-request');
 const { throwAppError, ERROR_CODE } = require('@app-core/errors');
 const { URL } = require('url'); // For Node.js compatibility
 const ParserMessages = require('../../../messages/parser');
@@ -92,11 +93,10 @@ function formUrl(reqlineData) {
 }
 
 async function makeRequest(method, url, headers, body) {
-  return fetch(url.toString(), {
-    method,
-    headers,
-    body: JSON.stringify(body),
-  });
+  if (method === 'GET') {
+    return HttpRequest.get(url.toString(), { headers });
+  }
+  return HttpRequest.post(url.toString(), body, { headers });
 }
 
 module.exports = {

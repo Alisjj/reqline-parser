@@ -30,18 +30,10 @@ async function parseReqline(serviceData) {
     const body = extractBodyFromReq(reqline);
     const headers = extractHeaderFromReq(reqline);
 
+    const requestStartTimestamp = Date.now();
     const response = await makeRequest(method, url, headers, method === 'POST' ? body : undefined);
-
-    let responseData;
-    try {
-      responseData = await response.json();
-    } catch (jsonError) {
-      try {
-        responseData = await response.text();
-      } catch (textError) {
-        responseData = 'Unable to parse response data';
-      }
-    }
+    const requestStopTimestamp = Date.now();
+    const duration = requestStopTimestamp - requestStartTimestamp;
 
     return {
       request: {
@@ -51,11 +43,11 @@ async function parseReqline(serviceData) {
         full_url: url.toString(),
       },
       response: {
-        http_status: response.status,
-        duration: response.headers.get('x-response-time') || 0,
-        request_start_timestamp: Date.now(),
-        request_stop_timestamp: Date.now() + (response.headers.get('x-response-time') || 0),
-        response_data: responseData,
+        http_status: response.statusCode,
+        duration,
+        request_start_timestamp: requestStartTimestamp,
+        request_stop_timestamp: requestStopTimestamp,
+        response_data: response.data,
       },
     };
   } catch (error) {
